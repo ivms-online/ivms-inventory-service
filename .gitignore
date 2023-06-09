@@ -1,0 +1,16 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+# IntelliJ IDE files
+/.idea
+/**/*.iml
+
+# project builds
+/build-info.json
+/**/target
+/cobertura.xml
+# log files
+/**/*.log
