@@ -6,7 +6,7 @@
 
 [package]
 name = "integration-tests"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 repository = "https://github.com/ivms-online/ivms-licenses-service"
 authors = [
