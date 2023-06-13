@@ -351,8 +351,8 @@ async fn i_get_api_error(world: &mut TestWorld, message: String) {
     assert_eq!(message, response["errorMessage"]);
 }
 
-#[then(expr = "I can read inventory ID {string} and type {string}")]
-async fn i_can_read_inventory_key(world: &mut TestWorld, inventory_id: String, inventory_type: String) {
+#[then(expr = "I can read inventory type as {string}")]
+async fn i_can_read_inventory_type(world: &mut TestWorld, inventory_type: String) {
     let response: HashMap<String, Value> = from_slice(
         world
             .invoke_response
@@ -365,6 +365,21 @@ async fn i_can_read_inventory_key(world: &mut TestWorld, inventory_id: String, i
     .unwrap();
 
     assert_eq!(inventory_type.as_str(), response["inventoryType"].as_str().unwrap());
+}
+
+#[then(expr = "I can read inventory ID as {string}")]
+async fn i_can_read_inventory_id(world: &mut TestWorld, inventory_id: String) {
+    let response: HashMap<String, Value> = from_slice(
+        world
+            .invoke_response
+            .as_ref()
+            .and_then(|response| response.as_ref().ok())
+            .and_then(|response| response.payload())
+            .unwrap()
+            .as_ref(),
+    )
+        .unwrap();
+
     assert_eq!(inventory_id.as_str(), response["inventoryId"].as_str().unwrap());
 }
 
@@ -381,7 +396,7 @@ async fn i_can_read_inventory_serial_number(world: &mut TestWorld, serial_number
     )
     .unwrap();
 
-    assert_eq!(serial_number.as_str(), response["serial_number"].as_str().unwrap());
+    assert_eq!(serial_number.as_str(), response["serialNumber"].as_str().unwrap());
 }
 
 #[then(expr = "I can read inventory AWS instance ID as {string}")]
@@ -400,7 +415,7 @@ async fn i_can_read_inventory_aws_instance_id(world: &mut TestWorld, aws_instanc
     assert_eq!(aws_instance_id.as_str(), response["awsInstanceId"].as_str().unwrap());
 }
 
-#[then(expr = "I can read license expiration date as {string}")]
+#[then(expr = "I can read inventory creation date as {string}")]
 async fn i_can_read_inventory_creation_date(world: &mut TestWorld, created_at: String) {
     let response: HashMap<String, Value> = from_slice(
         world
@@ -440,8 +455,8 @@ async fn inventory_with_that_key_exists(world: &mut TestWorld, serial_number: St
     let customer_id = world.customer_id.clone().unwrap();
     let vessel_id = world.vessel_id.clone().unwrap();
 
-    let inventory_type = world.inventory_type.unwrap();
-    let inventory_id = world.inventory_id.unwrap();
+    let inventory_type = world.inventory_type.clone().unwrap();
+    let inventory_id = world.inventory_id.clone().unwrap();
 
     let inventory = world
         .dynamodb
