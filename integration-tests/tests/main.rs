@@ -378,7 +378,7 @@ async fn i_can_read_inventory_id(world: &mut TestWorld, inventory_id: String) {
             .unwrap()
             .as_ref(),
     )
-        .unwrap();
+    .unwrap();
 
     assert_eq!(inventory_id.as_str(), response["inventoryId"].as_str().unwrap());
 }
