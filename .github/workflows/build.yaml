@@ -1,0 +1,122 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+on:
+    push:
+        tags-ignore: "**"
+        branches:
+            - "master"
+    pull_request:
+        branches: "**"
+    schedule:
+        -
+            cron: "0 3 * * 0"
+
+jobs:
+    build:
+        if: "!contains(github.event.head_commit.message, '[skip ci]') || (github.event_name == 'schedule')"
+        runs-on: "ubuntu-22.04"
+        steps:
+            -
+                uses: "actions/checkout@v3.5.3"
+            -
+                run: "sudo apt-get install -y libssl-dev musl-tools"
+            -
+                uses: "dtolnay/rust-toolchain@v1"
+                with:
+                    toolchain: "nightly"
+                    target: "${{ vars.RUST_BUILD_TARGET }}"
+                    components: "rustfmt, clippy"
+            -
+                uses: "Swatinem/rust-cache@v2.4.0"
+            -
+                run: "make init-cargo"
+            -
+                run: "make build-dev"
+            -
+                uses: "rrainn/dynamodb-action@v3.0.0"
+            -
+                run: "make test"
+                env:
+                    AWS_REGION: "${{ vars.AWS_REGION }}"
+                    AWS_ACCESS_KEY_ID: "dummy"
+                    AWS_SECRET_ACCESS_KEY: "dummy"
+            -
+                uses: "actions-rs/clippy-check@v1.0.7"
+                with:
+                    token: "${{ secrets.GITHUB_TOKEN }}"
+            -
+                uses: "LoliGothick/rustfmt-check@v0.3.2"
+                with:
+                    token: "${{ secrets.GITHUB_TOKEN }}"
+                    flags: "--all"
+                    args: "--config max_width=120,newline_style=Unix,edition=2021"
+            -
+                run: "cargo udeps"
+            -
+                run: "make doc"
+            -
+                uses: "codecov/codecov-action@v3.1.4"
+                with:
+                    token: "${{ vars.CODECOV_TOKEN }}"
+                    flags: "unittests,rust-${{ vars.RUST_BUILD_TARGET }}"
+                    fail_ci_if_error: true
+                    verbose: true
+
+    release:
+        if: "(github.event_name == 'push') && (github.event.ref == 'refs/heads/master')"
+        runs-on: "ubuntu-20.04"
+        needs: "build"
+        permissions:
+            contents: "write"
+            id-token: "write"
+        steps:
+            -
+                uses: "actions/checkout@v3.5.3"
+            -
+                run: "sudo apt-get install -y libssl-dev musl-tools"
+            -
+                uses: "dtolnay/rust-toolchain@v1"
+                with:
+                    toolchain: "nightly"
+                    target: "${{ vars.RUST_BUILD_TARGET }}"
+            -
+                uses: "Swatinem/rust-cache@v2.4.0"
+            -
+                run: "make init-cargo"
+            -
+                uses: "aws-actions/configure-aws-credentials@v2.1.0"
+                with:
+                    role-to-assume: "${{ secrets.AWS_IAM_ROLE_ARN }}"
+                    aws-region: "${{ vars.AWS_REGION }}"
+            -
+                run: |
+                    git config user.name "GitHub Actions"
+                    git config user.email "office@wrzasq.pl"
+            -
+                run: "cargo workspaces version patch --force '*' --yes --no-individual-tags --tag-prefix 'release-'"
+            -
+                id: "tag"
+                run: "echo version=$(git describe --abbrev=0 | sed s/release-//g) >> $GITHUB_OUTPUT"
+            -
+                run: "make build"
+            -
+                run: "make -j $(grep -c 'processor' /proc/cpuinfo) package"
+            -
+                run: |
+                    for file in target/*.zip; do
+                        aws s3 cp $file "s3://chilldev-repository/sam/${GITHUB_REPOSITORY}/${{ steps.tag.outputs.version }}/";
+                    done
+
+                    rm -rf target
+                    echo "{\"version\":\"${{ steps.tag.outputs.version }}\"}" > build-info.json
+                    zip --exclude ".git*" -r checkout.zip .
+                    aws s3 cp checkout.zip "s3://stackset-organization-global-3616-pipelinesbucket-rjs8r4gs0f1d/${{ github.event.repository.name }}/checkout.zip"
+            -
+                uses: "ad-m/github-push-action@v0.6.0"
+                with:
+                    github_token: "${{ secrets.GITHUB_TOKEN }}"
+                    branch: "${{ github.ref }}"

@@ -1,0 +1,104 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+AWSTemplateFormatVersion: "2010-09-09"
+
+Transform:
+    - "WrzasqPlCformMacro"
+
+Parameters:
+    ComponentId:
+        Type: "String"
+
+    InventoryTableName:
+        Type: "String"
+
+    InventoryTableArn:
+        Type: "String"
+
+    CreatorLambdaArn:
+        Type: "String"
+
+    DeleterLambdaArn:
+        Type: "String"
+
+    FetcherLambdaArn:
+        Type: "String"
+
+    ListerLambdaArn:
+        Type: "String"
+
+Resources:
+    IntegrationProjectRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                -
+                    Action:
+                        - "sts:AssumeRole"
+                    Effect: "Allow"
+                    Principal:
+                        Service:
+                            - "codebuild.amazonaws.com"
+            ManagedPolicyArns:
+                - !ImportValue "root:v1:policy:cloudwatch-create-v2"
+                - !ImportValue "root:v1:codepipeline:artifacts-policy:arn"
+            Policies:
+                AllowLoggingToCloudWatchLogs:
+                    -
+                        Action:
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Effect: "Allow"
+                        Resource:
+                            - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*"
+                AllowS3CacheStorage:
+                    -
+                        Action:
+                            - "s3:GetObject"
+                            - "s3:PutObject"
+                        Effect: "Allow"
+                        Resource:
+                            - !Sub "arn:aws:s3:::${Import:root:v1:codebuild:cache-bucket:name}/${ComponentId}/integrations/*"
+                AllowDynamoDbAccess:
+                    -
+                        Action:
+                            - "dynamodb:DeleteItem"
+                            - "dynamodb:GetItem"
+                            - "dynamodb:PutItem"
+                            - "dynamodb:Query"
+                        Effect: "Allow"
+                        Resource:
+                            - !Ref "InventoryTableArn"
+                AllowInvokingLambdas:
+                    -
+                        Action:
+                            - "lambda:InvokeFunction"
+                        Effect: "Allow"
+                        Resource:
+                            - !Ref "CreatorLambdaArn"
+                            - !Ref "DeleterLambdaArn"
+                            - !Ref "FetcherLambdaArn"
+                            - !Ref "ListerLambdaArn"
+
+    IntegrationBuildProject:
+        Type: "AWS::CodeBuild::Project"
+        Properties:
+            ServiceRole: !Ref "IntegrationProjectRole"
+            Environment:
+                Image: "aws/codebuild/standard:7.0"
+                ComputeType: "BUILD_GENERAL1_SMALL"
+                EnvironmentVariables:
+                    INVENTORY_TABLE: !Ref "InventoryTableName"
+                    CREATOR_LAMBDA: !Ref "CreatorLambdaArn"
+                    DELETER_LAMBDA: !Ref "DeleterLambdaArn"
+                    FETCHER_LAMBDA: !Ref "FetcherLambdaArn"
+                    LISTER_LAMBDA: !Ref "ListerLambdaArn"
+            Cache: !Sub "${Import:root:v1:codebuild:cache-bucket:name}/${ComponentId}/integrations"
+
+Outputs:
+    BuildProjectName:
+        Value: !Ref "IntegrationBuildProject"

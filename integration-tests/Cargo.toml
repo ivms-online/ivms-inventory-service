@@ -1,0 +1,32 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+[package]
+name = "integration-tests"
+version = "0.0.1"
+edition = "2021"
+repository = "https://github.com/ivms-online/ivms-licenses-service"
+authors = [
+    "Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>"
+]
+
+[dev-dependencies]
+async-trait = "0.1.68"
+aws-config = "0.55.3"
+aws-sdk-dynamodb = "0.28.0"
+aws-sdk-lambda = "0.28.0"
+aws-smithy-types = "0.55.3"
+chrono = { version = "0.4.26", default-features = false, features = ["serde"] }
+cucumber = "0.19.1"
+futures = "0.3.28"
+serde_json = "1.0.96"
+thiserror = "1.0.40"
+tokio = { version = "1.28.2", features = ["macros"] }
+
+[[test]]
+name = "integration"
+path = "tests/main.rs"
+harness = false

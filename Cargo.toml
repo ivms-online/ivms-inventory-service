@@ -1,0 +1,23 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+[workspace]
+members = [
+    "inventory-core",
+    "inventory-creator",
+    "inventory-deleter",
+    "inventory-fetcher",
+    "inventory-lister",
+    "integration-tests"
+]
+resolver = "2"
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3
+lto = true

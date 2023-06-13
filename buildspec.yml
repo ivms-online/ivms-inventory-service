@@ -1,0 +1,20 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+version: "0.2"
+
+phases:
+    build:
+        commands:
+            - "sudo apt-add-repository -y universe"
+            - "sudo apt install -y libssl-dev musl-tools"
+            - "curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly --component rustfmt clippy"
+            - ". \"$HOME/.cargo/env\""
+            - "make test-integration"
+
+cache:
+    paths:
+        - "/root/.cargo/**/*"

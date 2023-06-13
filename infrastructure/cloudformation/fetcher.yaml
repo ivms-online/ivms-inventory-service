@@ -1,0 +1,62 @@
+##
+# This file is part of the IVMS Online.
+#
+# @copyright 2023 © by Rafał Wrzeszcz - Wrzasq.pl.
+##
+
+AWSTemplateFormatVersion: "2010-09-09"
+
+Transform:
+    - "WrzasqPlCformMacro"
+    - "AWS::Serverless-2016-10-31"
+
+Parameters:
+    ProjectKey:
+        Type: "String"
+
+    ProjectVersion:
+        Type: "String"
+
+    ComponentId:
+        Type: "String"
+
+    ReleaseVersion:
+        Type: "String"
+
+    InventoryTableName:
+        Type: "String"
+
+    InventoryTableArn:
+        Type: "String"
+
+Resources:
+    Fetcher:
+        Type: "AWS::Serverless::Function"
+        Properties:
+            Runtime: "provided.al2"
+            CodeUri:
+                Bucket: "chilldev-repository"
+                Key: !Sub "sam/ivms-online/ivms-inventory-service/${ReleaseVersion}/inventory-fetcher.zip"
+            Handler: "NOT_USED"
+            MemorySize: 384
+            Environment:
+                Variables:
+                    RUST_LOG: "info"
+                    INVENTORY_TABLE: !Ref "InventoryTableName"
+            Timeout: 30
+            Tracing: "Active"
+            Policies:
+                -
+                    Version: "2012-10-17"
+                    Statement:
+                        -
+                            Action:
+                                - "dynamodb:GetItem"
+                            Effect: "Allow"
+                            Resource:
+                                - !Ref "InventoryTableArn"
+            LogsRetentionInDays: 14
+
+Outputs:
+    LambdaArn:
+        Value: !GetAtt "Fetcher.Arn"
