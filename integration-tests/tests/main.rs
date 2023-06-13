@@ -145,7 +145,13 @@ async fn main() {
 
                     join!(
                         join_all(tasks),
-                        delete_inventory(&cleanup, &cleanup.customer_id, &cleanup.vessel_id, &cleanup.license_key),
+                        delete_inventory(
+                            &cleanup,
+                            &cleanup.customer_id,
+                            &cleanup.vessel_id,
+                            &cleanup.inventory_type,
+                            &cleanup.inventory_id,
+                        ),
                     )
                     .await;
                 }
@@ -462,7 +468,7 @@ async fn inventory_with_that_key_exists(world: &mut TestWorld, serial_number: St
             .and_then(|item| item["awsInstanceId"].as_s().ok())
             .unwrap()
     );
-    assert!(*inventory
+    assert!(inventory
         .as_ref()
         .and_then(|item| item["createdAt"].as_s().ok())
         .is_some());
