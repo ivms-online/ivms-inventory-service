@@ -21,7 +21,7 @@ chrono = { version = "0.4.26", default-features = false, features = ["serde"] }
 env_logger = "0.10.0"
 futures = "0.3.28"
 http = "0.2.8"
-lambda_runtime = "0.8.0"
+lambda_runtime = "0.8.1"
 log = "0.4.19"
 serde = { version = "1.0.163", features = ["derive"] }
 serde_dynamo = { version = "4.2.3", features = ["aws-sdk-dynamodb+0_28"] }

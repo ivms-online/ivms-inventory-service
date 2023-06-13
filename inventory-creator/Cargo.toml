@@ -16,7 +16,7 @@ authors = [
 [dependencies]
 chrono = { version = "0.4.26", default-features = false, features = ["clock", "serde"] }
 inventory-core = { path = "../inventory-core" }
-lambda_runtime = "0.8.0"
+lambda_runtime = "0.8.1"
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = "1.0.96"
 tokio = { version = "1.28.2", features = ["macros"] }
