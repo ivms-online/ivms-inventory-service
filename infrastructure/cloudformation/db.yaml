@@ -9,6 +9,16 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform:
     - "WrzasqPlCformMacro"
 
+Parameters:
+    ProjectKey:
+        Type: "String"
+
+    ProjectVersion:
+        Type: "String"
+
+    ComponentId:
+        Type: "String"
+
 Resources:
     InventoryTable:
         Type: "AWS::DynamoDB::Table"
@@ -23,6 +33,8 @@ Resources:
                     KeyType: "RANGE"
             PointInTimeRecoverySpecification:
                 PointInTimeRecoveryEnabled: true
+            StreamSpecification:
+                StreamViewType: "NEW_AND_OLD_IMAGES"
             BillingMode: "PAY_PER_REQUEST"
 
 Outputs:
@@ -31,3 +43,8 @@ Outputs:
 
     InventoryTableArn:
         Value: !GetAtt "InventoryTable.Arn"
+
+    InventoryStreamArn:
+        Value: !GetAtt "InventoryTable.StreamArn"
+        Export:
+            Name: !Sub "${ProjectKey}:${ProjectVersion}:${ComponentId}:InventoryStream:Arn"

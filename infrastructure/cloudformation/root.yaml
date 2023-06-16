@@ -133,6 +133,10 @@ Resources:
                                     "Fn::ImportValue": !Sub "${ProjectKey}:${ProjectVersion}:infrastructure:infrastructure-role:arn"
                                 TemplatePath: "checkout::infrastructure/cloudformation/db.yaml"
                                 TemplateConfiguration: !Sub "checkout::infrastructure/cloudformation/config-${EnvironmentName}.json"
+                            Parameters:
+                                ProjectKey: !Ref "ProjectKey"
+                                ProjectVersion: !Ref "ProjectVersion"
+                                ComponentId: !Ref "ComponentId"
                         Creator:
                             ActionType: "CloudFormationDeploy"
                             Configuration:

@@ -8,7 +8,7 @@
 name = "integration-tests"
 version = "0.0.3"
 edition = "2021"
-repository = "https://github.com/ivms-online/ivms-licenses-service"
+repository = "https://github.com/ivms-online/ivms-inventory-service"
 authors = [
     "Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>"
 ]
