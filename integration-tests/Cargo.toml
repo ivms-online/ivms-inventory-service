@@ -14,7 +14,7 @@ authors = [
 ]
 
 [dev-dependencies]
-async-trait = "0.1.68"
+async-trait = "0.1.69"
 aws-config = "0.55.3"
 aws-sdk-dynamodb = "0.28.0"
 aws-sdk-lambda = "0.28.0"
