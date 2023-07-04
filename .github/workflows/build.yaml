@@ -31,7 +31,7 @@ jobs:
                     target: "${{ vars.RUST_BUILD_TARGET }}"
                     components: "rustfmt, clippy"
             -
-                uses: "Swatinem/rust-cache@v2.4.0"
+                uses: "Swatinem/rust-cache@v2.5.1"
             -
                 run: "make init-cargo"
             -
@@ -84,7 +84,7 @@ jobs:
                     toolchain: "nightly"
                     target: "${{ vars.RUST_BUILD_TARGET }}"
             -
-                uses: "Swatinem/rust-cache@v2.4.0"
+                uses: "Swatinem/rust-cache@v2.5.1"
             -
                 run: "make init-cargo"
             -
