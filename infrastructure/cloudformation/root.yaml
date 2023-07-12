@@ -273,9 +273,11 @@ Resources:
                     - "Object Created"
                 detail:
                     bucket:
-                        name: !ImportValue "root:v1:codepipeline:artifacts-bucket:name"
+                        name:
+                            - !ImportValue "root:v1:codepipeline:artifacts-bucket:name"
                     object:
-                        key: !Sub "${ComponentId}/checkout.zip"
+                        key:
+                            - !Sub "${ComponentId}/checkout.zip"
             State: "ENABLED"
             Targets:
                 -
