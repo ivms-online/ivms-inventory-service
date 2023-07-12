@@ -242,3 +242,43 @@ Resources:
                             Source: "Checkout:Checkout"
                             Bucket:
                                 "Fn::ImportValue": !Sub "${ProjectKey}:${ProjectVersion}:infrastructure:next-stage-artifacts-bucket:name"
+
+    TriggerRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                -
+                    Action:
+                        - "sts:AssumeRole"
+                    Effect: "Allow"
+                    Principal:
+                        Service:
+                            - "events.amazonaws.com"
+            Policies:
+                AllowStartingPipeline:
+                    -
+                        Action:
+                            - "codepipeline:StartPipelineExecution"
+                        Effect: "Allow"
+                        Resource:
+                            - !Sub "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${DeployPipeline}"
+
+    TriggerRule:
+        Type: "AWS::Events::Rule"
+        Properties:
+            EventPattern:
+                source:
+                    - "aws.s3"
+                detail-type:
+                    - "Object Created"
+                detail:
+                    bucket:
+                        name: !ImportValue "root:v1:codepipeline:artifacts-bucket:name"
+                    object:
+                        key: !Sub "${ComponentId}/checkout.zip"
+            State: "ENABLED"
+            Targets:
+                -
+                    Arn: !Sub "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${DeployPipeline}"
+                    Id: "pipeline"
+                    RoleArn: !GetAtt "TriggerRole.Arn"
