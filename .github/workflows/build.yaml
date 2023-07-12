@@ -49,7 +49,7 @@ jobs:
                 with:
                     token: "${{ secrets.GITHUB_TOKEN }}"
             -
-                uses: "LoliGothick/rustfmt-check@v0.3.2"
+                uses: "LoliGothick/rustfmt-check@v0.4.1"
                 with:
                     token: "${{ secrets.GITHUB_TOKEN }}"
                     flags: "--all"
