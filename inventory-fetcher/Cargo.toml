@@ -6,7 +6,7 @@
 
 [package]
 name = "inventory-fetcher"
-version = "0.0.5"
+version = "0.0.6"
 edition = "2021"
 repository = "https://github.com/ivms-online/ivms-inventory-service"
 authors = [
