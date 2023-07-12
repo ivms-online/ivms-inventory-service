@@ -1253,7 +1253,7 @@ dependencies = [
 
 [[package]]
 name = "integration-tests"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "async-trait",
  "aws-config",
@@ -1276,7 +1276,7 @@ checksum = "c38a87a1e0e2752433cd4b26019a469112a25fb43b30f5ee9b3b898925c5a0f9"
 
 [[package]]
 name = "inventory-core"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "async-trait",
  "aws-config",
@@ -1305,7 +1305,7 @@ dependencies = [
 
 [[package]]
 name = "inventory-creator"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "inventory-core",
@@ -1318,7 +1318,7 @@ dependencies = [
 
 [[package]]
 name = "inventory-deleter"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "inventory-core",
  "lambda_runtime",
@@ -1330,7 +1330,7 @@ dependencies = [
 
 [[package]]
 name = "inventory-fetcher"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "inventory-core",
@@ -1343,7 +1343,7 @@ dependencies = [
 
 [[package]]
 name = "inventory-lister"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "inventory-core",
